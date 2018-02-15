@@ -1,0 +1,41 @@
+<idea-plugin>
+  <id>fr.aviscogl.header</id>
+  <name>101 Header</name>
+  <version>1.1</version>
+  <vendor email="alexis.viscogliosi@outlook.fr" url="http://www.le-101.fr">le-101</vendor>
+
+  <description><![CDATA[
+      Add 101 header on you c files (alt + h).<br>
+    ]]></description>
+
+  <change-notes><![CDATA[
+      Add 101 header on you c files (alt + h).<br>
+    ]]>
+  </change-notes>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
+  <idea-version since-build="145.0"/>
+
+  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+       on how to target different products -->
+  <!-- uncomment to enable plugin in all products
+  <depends>com.intellij.modules.lang</depends>
+  -->
+
+  <depends>com.intellij.modules.lang</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+      <applicationConfigurable groupId="tools" displayName="Header 101 plugin" id="preference.Header101" instance="fr.aviscogl.header.SettingsPanel" />
+  </extensions>
+
+  <application-components>
+    <component>
+      <implementation-class>fr.aviscogl.header.Save</implementation-class>
+    </component>
+  </application-components>
+  <actions>
+    <action id="fr.aviscogl.header.Generate" class="fr.aviscogl.header.Generate" text="set header">
+      <keyboard-shortcut keymap="$default" first-keystroke="alt H"/>
+    </action>
+  </actions>
+</idea-plugin>
