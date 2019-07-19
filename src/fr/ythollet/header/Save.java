@@ -1,5 +1,6 @@
 package fr.ythollet.header;
 
+import com.intellij.openapi.actionSystem.LangDataKeys;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.components.ApplicationComponent;
 import com.intellij.openapi.editor.Document;
@@ -12,7 +13,6 @@ import com.intellij.openapi.vfs.VirtualFileListener;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import org.jetbrains.annotations.NotNull;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -40,14 +40,39 @@ public class Save implements ApplicationComponent {
                     return;
                 String dte = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
                 String header;
-                if (filename.toString().contains("Makefile"))
-                    header = String.format("#   %-42s  ###    #+. /#+    ###.fr     #", String.format("Updated: %s by %s", dte, System.getenv("USER").equals("alexis") ? "aviscogl" : System.getenv("USER")));
+
+                String sc;
+                String ec;
+                if (extension != null && (extension.equals("c") || extension.equals("h")))
+                {
+                    sc = "/*";
+                    ec = "*/";
+                }
+                else if ((extension != null && extension.equals("py"))) //|| filename.contains("Makefile"))
+                {
+                    sc = "#";
+                    ec = "#";
+                }
                 else
-                    header = String.format("/*   %-42s  ###    #+. /#+    ###.fr     */", String.format("Updated: %s by %s", dte, System.getenv("USER").equals("alexis") ? "aviscogl" : System.getenv("USER")));
+                {
+                    sc = "//";
+                    ec = "// ";
+                }
+
+                String st = sc;
+                String et = ec + "\n";
+
+                header = String.format(st + "                                                         %s " + et, dte);
+
+                /*
+                Runnable runnable = () -> AnActionEvent.getData(LangDataKeys.EDITOR).getDocument().insertString(0, header.toString());
+                WriteCommandAction.runWriteCommandAction(getEventProject(AnActionEvent), runnable);
+                */
 
                 Runnable runnable = () -> doc.replaceString(648, 648 + header.length(), header);
 
-                if (doc.getModificationStamp() > 0) {
+                if (doc.getModificationStamp() > 0)
+                {
                     System.out.println("Saved doc: " + filename);
                     WriteCommandAction.runWriteCommandAction(ProjectManager.getInstance().getOpenProjects()[0], runnable);
                 }

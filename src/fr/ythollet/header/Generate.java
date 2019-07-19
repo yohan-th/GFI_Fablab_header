@@ -9,6 +9,8 @@ import com.intellij.openapi.command.WriteCommandAction;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import static com.intellij.openapi.actionSystem.CommonDataKeys.VIRTUAL_FILE;
 
@@ -19,8 +21,26 @@ public class Generate extends AnAction {
         VirtualFile file = AnActionEvent.getData(VIRTUAL_FILE);
         assert file != null;
         String filename = file.getName();
-        String user = System.getenv("USER");
         String dte = dateFormat.format(new Date());
+        String mail = System.getenv("MAIL");
+        String user = null;
+        if (mail == null)
+        {
+            user = "MAIL = Ø";
+            mail = "Import_MAIL_in_ENV_variable_&_restart";
+        }
+        else
+        {
+            Pattern p = Pattern.compile("([a-zA-Z0-9\\-]+)");
+            Matcher m = p.matcher(mail);
+            boolean find = m.find();
+            if (find && m.group(0).length() > 8)
+                user = m.group(0).substring(0, 8);
+            else if (find)
+                user = m.group(0);
+            else
+                user = "error";
+        }
 
         String sc;
         String ec;
@@ -40,34 +60,7 @@ public class Generate extends AnAction {
             sc = "//";
             ec = "// ";
         }
-/*
 
-
-# *************************************************************************** #
-#   ___  ____  __    ____  __   ____  __     __   ____    tf_training.py      #
-#  / __)(  __)(  )  (  __)/ _\ (  _ \(  )   / _\ (  _ \                       #
-# ( (_ \ ) _)  )(    ) _)/    \ ) _ (/ (_/\/    \ ) _ (   Created by yohan    #
-#  \___/(__)  (__)  (__) \_/\_/(____/\____/\_/\_/(____/   19/06/2019 11:34:42 #
-#                                                                             #
-#          Contact: yohan.thollet@gfi.world               Updated by yohan    #
-#                                                         21/06/2019 15:39:42 #
-# *************************************************************************** #
-
-# **************************************************************************** #
-#                                                           LE - /             #
-#                                                               /              #
-#    Makefile                                         .::    .:/ .      .::    #
-#                                                  +:+:+   +:    +:  +:+:+     #
-#    By: ythollet <ythollet@student.le-101.fr>      +:+   +:    +:    +:+      #
-#                                                  #+#   #+    #+    #+#       #
-#    Created: 2018/03/14 01:36:40 by ythollet     #+#   ##    ##    #+#        #
-#    Updated: 2018/06/18 21:15:34 by ythollet    ###    #+. /#+    ###.fr      #
-#                                                          /                   #
-#                                                         /                    #
-# **************************************************************************** #
-
-*/
-        String mail = "yohan.thollet@gfi.world";
         String st = sc;
         String et = ec + "\n";
 
@@ -78,7 +71,7 @@ public class Generate extends AnAction {
         sb.append(st).append(String.format(" ( (_ \\ ) _)  )(    ) _)/    \\ ) _ (/ (_/\\/    \\ ) _ (   Created by %-8s " + et, user));
         sb.append(st).append(String.format("  \\___/(__)  (__)  (__) \\_/\\_/(____/\\____/\\_/\\_/(____/   %s " + et, dte));
         sb.append(st).append("                                                                             ").append(et);
-        sb.append(st).append(String.format("          Contact: %-38sUpdated by %-8s " + et, mail, user));
+        sb.append(st).append(String.format("         Contact: %-39sUpdated by %-8s " + et, mail, user));
         sb.append(st).append(String.format("                                                         %s " + et, dte));
         sb.append(sc).append(" ").append(sc.length() == 1 ? "*" : "").append("*************************************************************************").append(ec.length() == 1 ? "*" : "").append(" ").append(ec).append("\n");
 
