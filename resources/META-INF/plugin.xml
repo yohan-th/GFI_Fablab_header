@@ -1,11 +1,15 @@
 <idea-plugin>
   <id>fr.ythollet.header</id>
   <name>GFI Fablab header</name>
-  <version>1.1</version>
+  <version>1.0</version>
   <vendor email="yohan.thollet@gfi.world" url="https://gfi.world">GFI</vendor>
 
   <description><![CDATA[
       Add GFI Fablab header on your files (alt + h).<br>
+      Update the header (alt + s).<br>
+      <br>
+      You need to create environment variable MAIL=[your@mail] and restart.<br>
+      Java Runtime Environment version >= 53.<br>
     ]]></description>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
@@ -23,6 +27,9 @@
             description="Add fablab header">
       <keyboard-shortcut keymap="$default" first-keystroke="alt H"/>
       <add-to-group group-id="ToolsMenu" anchor="first"/>
+    </action>
+    <action id="fr.ythollet.header.Save" class="fr.ythollet.header.Save" text="Save fablab header">
+      <keyboard-shortcut keymap="$default" first-keystroke="alt S"/>
     </action>
   </actions>
 </idea-plugin>

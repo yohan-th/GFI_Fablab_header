@@ -26,7 +26,7 @@ public class Generate extends AnAction {
         String user = null;
         if (mail == null)
         {
-            user = "MAIL = Ø";
+            user = "MAIL=Ø";
             mail = "Import_MAIL_in_ENV_variable_&_restart";
         }
         else
@@ -44,28 +44,31 @@ public class Generate extends AnAction {
 
         String sc;
         String ec;
+        String st;
         String extension = file.getExtension();
-        if (extension != null && (extension.equals("c") || extension.equals("h")))
+        if (extension != null && (extension.equals("c") || extension.equals("h") || extension.equals("php")))
         {
             sc = "/*";
-            ec = "*/";
+            ec = "*/\n";
+            st = "/";
         }
         else if ((extension != null && extension.equals("py")) || filename.contains("Makefile"))
         {
             sc = "#";
-            ec = "#";
+            ec = "#\n";
+            st = "#";
         }
         else
         {
             sc = "//";
-            ec = "// ";
+            ec = "//\n";
+            st = "/";
         }
 
-        String st = sc;
-        String et = ec + "\n";
+        String et = st + "\n";
 
         StringBuilder sb = new StringBuilder();
-        sb.append(sc).append(" ").append(sc.length() == 1 ? "*" : "").append("*************************************************************************").append(ec.length() == 1 ? "*" : "").append(" ").append(ec).append("\n");
+        sb.append(sc).append(" **************************************************************************").append(sc.length() == 1 ? "* " : " ").append(et);
         sb.append(st).append(String.format("   ___  ____  __    ____  __   ____  __     __   ____    %-19s " + et, filename));
         sb.append(st).append("  / __)(  __)(  )  (  __)/ _\\ (  _ \\(  )   / _\\ (  _ \\                       ").append(et);
         sb.append(st).append(String.format(" ( (_ \\ ) _)  )(    ) _)/    \\ ) _ (/ (_/\\/    \\ ) _ (   Created by %-8s " + et, user));
@@ -73,7 +76,7 @@ public class Generate extends AnAction {
         sb.append(st).append("                                                                             ").append(et);
         sb.append(st).append(String.format("         Contact: %-39sUpdated by %-8s " + et, mail, user));
         sb.append(st).append(String.format("                                                         %s " + et, dte));
-        sb.append(sc).append(" ").append(sc.length() == 1 ? "*" : "").append("*************************************************************************").append(ec.length() == 1 ? "*" : "").append(" ").append(ec).append("\n");
+        sb.append(st).append(" **************************************************************************").append(ec.length() == 2 ? "* " : " ").append(ec);
 
         Runnable runnable = () -> AnActionEvent.getData(LangDataKeys.EDITOR).getDocument().insertString(0, sb.toString());
         WriteCommandAction.runWriteCommandAction(getEventProject(AnActionEvent), runnable);
