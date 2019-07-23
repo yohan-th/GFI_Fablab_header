@@ -1,3 +1,13 @@
+/* ************************************************************************** /
+/   ___  ____  __    ____  __   ____  __     __   ____    Save.java           /
+/  / __)(  __)(  )  (  __)/ _\ (  _ \(  )   / _\ (  _ \                       /
+/ ( (_ \ ) _)  )(    ) _)/    \ ) _ (/ (_/\/    \ ) _ (   Created by yohan    /
+/  \___/(__)  (__)  (__) \_/\_/(____/\____/\_/\_/(____/   2019/07/23 15:49:02 /
+/                                                                             /
+/         Contact: yohanthollet@gfi.world                 Updated by yohan    /
+/                                                         2019/07/23 16:07:07 /
+/ ************************************************************************** */
+
 package fr.ythollet.header;
 
 import com.intellij.openapi.command.WriteCommandAction;
@@ -11,8 +21,6 @@ import com.intellij.openapi.actionSystem.LangDataKeys;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static com.intellij.openapi.actionSystem.CommonDataKeys.VIRTUAL_FILE;
 
@@ -23,7 +31,6 @@ public class Save extends AnAction {
         VirtualFile file = AnActionEvent.getData(VIRTUAL_FILE);
         assert file != null;
         StringBuilder filename = new StringBuilder(file.getName());
-        String extension = file.getExtension();
         Document doc = FileDocumentManager.getInstance().getDocument(file);
         if (doc == null)
             return;
@@ -33,52 +40,26 @@ public class Save extends AnAction {
         String dte = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(new Date());
 
         String mail = System.getenv("MAIL");
-        String user = null;
+        tools obj = new tools();
+        String user;
         if (mail == null)
             user = "MAIL=Ø";
         else
-        {
-            Pattern p = Pattern.compile("([a-zA-Z0-9\\-]+)");
-            Matcher m = p.matcher(mail);
-            boolean find = m.find();
-            if (find && m.group(0).length() > 8)
-                user = m.group(0).substring(0, 8);
-            else if (find)
-                user = m.group(0);
-            else
-                user = "error";
-        }
+            user = obj.get_user(mail);
 
-        String ec;
-        String st;
-        if (extension != null && (extension.equals("c") || extension.equals("h") || extension.equals("php")))
-        {
-            ec = "*/";
-            st = "/";
-        }
-        else if ((extension != null && extension.equals("py")) || filename.toString().contains("Makefile"))
-        {
-            ec = "#";
-            st = "#";
-        }
-        else
-        {
-            ec = "//";
-            st = "/";
-        }
-
+        String end = obj.get_end(file);
+        String frame_bgn = obj.get_frame_bgn(file);
+        String frame_end = frame_bgn + "\n";
         String header = doc.getText(new TextRange(0, 538));
 
-        String et = st + "\n";
         StringBuilder sb = new StringBuilder();
 
-        sb.append(String.format(header + "Updated by %-8s " + et, user));
-        sb.append(st).append(String.format("                                                         %s " + et, dte));
-        sb.append(st).append(" **************************************************************************").append(ec.length() == 1 ? "* " : " ").append(ec);
+        sb.append(String.format(header + "Updated by %-8s " + frame_end, user));
+        sb.append(String.format(frame_bgn + "                                                         %s " + frame_end, dte));
+        sb.append(frame_bgn + " **************************************************************************").append(end.length() == 1 ? "* " : " ").append(end);
 
         Runnable runnable = () -> AnActionEvent.getData(LangDataKeys.EDITOR).getDocument().replaceString(0, 719, sb.toString());
 
         WriteCommandAction.runWriteCommandAction(getEventProject(AnActionEvent), runnable);
-
     }
 }

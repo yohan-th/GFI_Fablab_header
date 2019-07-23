@@ -1,3 +1,13 @@
+/* ************************************************************************** /
+/   ___  ____  __    ____  __   ____  __     __   ____    Generate.java       /
+/  / __)(  __)(  )  (  __)/ _\ (  _ \(  )   / _\ (  _ \                       /
+/ ( (_ \ ) _)  )(    ) _)/    \ ) _ (/ (_/\/    \ ) _ (   Created by yohan    /
+/  \___/(__)  (__)  (__) \_/\_/(____/\____/\_/\_/(____/   2019/07/23 15:11:02 /
+/                                                                             /
+/         Contact: yohanthollet@gfi.world                 Updated by yohan    /
+/                                                         2019/07/23 16:06:43 /
+/ ************************************************************************** */
+
 package fr.ythollet.header;
 
 import com.intellij.openapi.actionSystem.AnAction;
@@ -9,8 +19,6 @@ import com.intellij.openapi.command.WriteCommandAction;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 import static com.intellij.openapi.actionSystem.CommonDataKeys.VIRTUAL_FILE;
 
@@ -23,63 +31,34 @@ public class Generate extends AnAction {
         String filename = file.getName();
         String dte = dateFormat.format(new Date());
         String mail = System.getenv("MAIL");
-        String user = null;
+
+        tools obj = new tools();
+        String user;
         if (mail == null)
         {
             user = "MAIL=Ø";
             mail = "Import_MAIL_in_ENV_variable_&_restart";
         }
         else
-        {
-            Pattern p = Pattern.compile("([a-zA-Z0-9\\-]+)");
-            Matcher m = p.matcher(mail);
-            boolean find = m.find();
-            if (find && m.group(0).length() > 8)
-                user = m.group(0).substring(0, 8);
-            else if (find)
-                user = m.group(0);
-            else
-                user = "error";
-        }
+            user = obj.get_user(mail);
 
-        String sc;
-        String ec;
-        String st;
-        String extension = file.getExtension();
-        if (extension != null && (extension.equals("c") || extension.equals("h") || extension.equals("php")))
-        {
-            sc = "/*";
-            ec = "*/\n";
-            st = "/";
-        }
-        else if ((extension != null && extension.equals("py")) || filename.contains("Makefile"))
-        {
-            sc = "#";
-            ec = "#\n";
-            st = "#";
-        }
-        else
-        {
-            sc = "//";
-            ec = "//\n";
-            st = "/";
-        }
-
-        String et = st + "\n";
+        String start = obj.get_start(file);
+        String end = obj.get_end(file);
+        String frame_bgn = obj.get_frame_bgn(file);
+        String frame_end = frame_bgn + "\n";
 
         StringBuilder sb = new StringBuilder();
-        sb.append(sc).append(" **************************************************************************").append(sc.length() == 1 ? "* " : " ").append(et);
-        sb.append(st).append(String.format("   ___  ____  __    ____  __   ____  __     __   ____    %-19s " + et, filename));
-        sb.append(st).append("  / __)(  __)(  )  (  __)/ _\\ (  _ \\(  )   / _\\ (  _ \\                       ").append(et);
-        sb.append(st).append(String.format(" ( (_ \\ ) _)  )(    ) _)/    \\ ) _ (/ (_/\\/    \\ ) _ (   Created by %-8s " + et, user));
-        sb.append(st).append(String.format("  \\___/(__)  (__)  (__) \\_/\\_/(____/\\____/\\_/\\_/(____/   %s " + et, dte));
-        sb.append(st).append("                                                                             ").append(et);
-        sb.append(st).append(String.format("         Contact: %-39sUpdated by %-8s " + et, mail, user));
-        sb.append(st).append(String.format("                                                         %s " + et, dte));
-        sb.append(st).append(" **************************************************************************").append(ec.length() == 2 ? "* " : " ").append(ec);
+        sb.append(start).append(" **************************************************************************").append(start.length() == 1 ? "* " : " ").append(frame_end);
+        sb.append(String.format(frame_bgn + "   ___  ____  __    ____  __   ____  __     __   ____    %-19s " + frame_end, filename));
+        sb.append(frame_bgn + "  / __)(  __)(  )  (  __)/ _\\ (  _ \\(  )   / _\\ (  _ \\                       " + frame_end);
+        sb.append(String.format(frame_bgn + " ( (_ \\ ) _)  )(    ) _)/    \\ ) _ (/ (_/\\/    \\ ) _ (   Created by %-8s " + frame_end, user));
+        sb.append(String.format(frame_bgn + "  \\___/(__)  (__)  (__) \\_/\\_/(____/\\____/\\_/\\_/(____/   %s " + frame_end, dte));
+        sb.append(frame_bgn + "                                                                             " + frame_end);
+        sb.append(String.format(frame_bgn + "         Contact: %-39sUpdated by %-8s " + frame_end, mail, user));
+        sb.append(String.format(frame_bgn + "                                                         %s " + frame_end, dte));
+        sb.append(frame_bgn + " **************************************************************************").append(end.length() == 1 ? "* " : " ").append(end + "\n\n");
 
         Runnable runnable = () -> AnActionEvent.getData(LangDataKeys.EDITOR).getDocument().insertString(0, sb.toString());
         WriteCommandAction.runWriteCommandAction(getEventProject(AnActionEvent), runnable);
     }
-
 }
