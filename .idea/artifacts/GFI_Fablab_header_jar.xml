@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="GFI_Fablab_header:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/GFI_Fablab_header_jar</output-path>
+    <root id="archive" name="GFI_Fablab_header.jar">
+      <element id="module-output" name="GFI_Fablab_header" />
+    </root>
+  </artifact>
+</component>
