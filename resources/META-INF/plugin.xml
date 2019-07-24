@@ -8,7 +8,7 @@
       Add GFI Fablab header on your files (alt + h).<br>
       Update the header (alt + s).<br>
       <br>
-      You need to create environment variable MAIL=[user@mail] and restart.<br>
+      You must create an environment variable MAIL=[user@mail] and restart.<br>
     ]]></description>
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
